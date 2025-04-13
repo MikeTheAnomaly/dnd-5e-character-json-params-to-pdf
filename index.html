@@ -26,10 +26,23 @@
   let playerData = {};
   if (playerParam) {
     try {
+      // Attempt to parse the JSON
       playerData = JSON.parse(playerParam);
-    } catch(e) {
-      console.log(playerParam)
-      console.warn("Could not parse 'player' as JSON.", e);
+    } catch (e) {
+      // If parsing fails, attempt to fix the JSON by removing characters from the end until it parses
+      let tempPlayerParam = playerParam;
+      while (tempPlayerParam.length > 0) {
+        try {
+          playerData = JSON.parse(tempPlayerParam);
+          break; // If parsing succeeds, break out of the loop
+        } catch (e2) {
+          // Remove the last character and try again
+          tempPlayerParam = tempPlayerParam.slice(0, -1);
+        }
+      }
+      if (tempPlayerParam.length === 0) {
+        console.warn("Could not parse 'player' as JSON, even after removing characters.", e);
+      }
     }
   }
 
